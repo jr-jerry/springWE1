@@ -21,10 +21,14 @@ public class StudentService {
     public Student updateStudentService(int studentId,Student studentData){
         //find the original data from db
         int indexOfSavedStudent=0; 
-        for(Student savedStudent:db){
-            if(savedStudent.getStuId()==studentId){
-                indexOfSavedStudent=db.indexOf(studentData);
-                 db.add(indexOfSavedStudent, studentData);
+         for(Student savedStudent:db){
+             if(savedStudent.getStuId()==studentId){
+
+
+                indexOfSavedStudent=db.indexOf(savedStudent);
+                // System.out.println(indexOfSavedStudent);
+                 db.set(indexOfSavedStudent, studentData);
+
                  return studentData;
             }
         }
