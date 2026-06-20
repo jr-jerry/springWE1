@@ -2,50 +2,63 @@ package com.ducat.springWE1.Services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.ducat.springWE1.DTO.StudentDTO;
 import com.ducat.springWE1.Entity.Student;
+import com.ducat.springWE1.Repository.StudentRepo;
 
 @Service
 public class StudentService {
     private final List<Student> db=new ArrayList<>();
-
-    public Student saveStudentService(Student studentData){
-        boolean isSaved=db.add(studentData);//true-->succesfull
-
-        if(isSaved)return studentData;
-        return null;
+    
+    private final StudentRepo studentRepo;
+    public StudentService(StudentRepo studentRepo){
+        this.studentRepo=studentRepo;
     }
 
+    //Store Data in Persistent DB 
+    public Student saveStudentService(StudentDTO studentDto){
+        Student emptyStudent=new Student();
+        emptyStudent.setStuAge(studentDto.getStuAge());
+        emptyStudent.setStuName(studentDto.getStuName());
+         //true-->succesfull
+        return studentRepo.save(emptyStudent);
+    }
+//Updated ! 
     public Student updateStudentService(int studentId,Student studentData){
-        //find the original data from db
-        int indexOfSavedStudent=0; 
-         for(Student savedStudent:db){
-             if(savedStudent.getStuId()==studentId){
+         //Find Old Student Data 
+            Optional<Student> box=studentRepo.findById(studentId);
+            //Student exist with this studentId
+            if(box.isPresent()){
+                //Then update the old data with new one 
+                Student savedStudent=box.get();
 
+                //Update Field by Field 
+                savedStudent.setStuAge(studentData.getStuAge());
+                savedStudent.setStuName(studentData.getStuName());
 
-                indexOfSavedStudent=db.indexOf(savedStudent);
-                // System.out.println(indexOfSavedStudent);
-                 db.set(indexOfSavedStudent, studentData);
-
-                 return studentData;
+                //Save the Updated student object 
+                return studentRepo.save(savedStudent);
+                
             }
-        }
-        return null;
+            return null;             
     }
+
+
+   //Updated ! 
     public boolean deleteStudentService(int studentId){
-        //if student exist with this id 
-        for(Student studentSaved:db){
-            if(studentSaved.getStuId()==studentId){
-                int index_Of_SavedData=db.indexOf(studentSaved);
-                db.remove(index_Of_SavedData);
-                return true;
-            }
-        }
-        return false;
+         //if student exist with this id ! 
+         Optional<Student> box=studentRepo.findById(studentId);
+         if(box.isPresent()){
+            studentRepo.deleteById(studentId);
+            return true;
+         }
+         return false;
     }
     public List<Student> getStudentService(){
-        return db;
+        return studentRepo.findAll();
     }
 }
