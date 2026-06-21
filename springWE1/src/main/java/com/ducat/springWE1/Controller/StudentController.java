@@ -25,16 +25,16 @@ public class StudentController {
         this.studentService=studentService;
     }   
     @GetMapping("/get-students")
-    public List<Student> getEndpoint(){
+    public List<StudentDTO> getEndpoint(){
         return studentService.getStudentService();
     }
     @PostMapping("/create-student")
-    public Student creatStudentEnpoint(@RequestBody StudentDTO studentData) {
+    public StudentDTO creatStudentEnpoint(@RequestBody StudentDTO studentData) {
        return studentService.saveStudentService(studentData);      
     }
     @PutMapping("/update-student/{studentId}")
-    public Student updateStudentEndpoint(@PathVariable int studentId,@RequestBody Student studentData){
-        return studentService.updateStudentService(studentId, studentData);
+    public StudentDTO updateStudentEndpoint(@PathVariable int studentId,@RequestBody StudentDTO studentDTO){
+        return studentService.updateStudentService(studentId, studentDTO);
     }
     @DeleteMapping("/delete-student/{studentId}")
     public boolean deleteStudentEndpoint(@PathVariable int studentId){

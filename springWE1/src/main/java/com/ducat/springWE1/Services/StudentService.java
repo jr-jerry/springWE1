@@ -20,15 +20,21 @@ public class StudentService {
     }
 
     //Store Data in Persistent DB 
-    public Student saveStudentService(StudentDTO studentDto){
+    public StudentDTO saveStudentService(StudentDTO studentDto){
+        Student s1=getStudent_from_DTO(studentDto);
+        Student savedStudent=studentRepo.save(s1);
+        return getDto_from_Student(savedStudent);
+
+    }
+    public static Student getStudent_from_DTO(StudentDTO studentDTO){
         Student emptyStudent=new Student();
-        emptyStudent.setStuAge(studentDto.getStuAge());
-        emptyStudent.setStuName(studentDto.getStuName());
-         //true-->succesfull
-        return studentRepo.save(emptyStudent);
+        emptyStudent.setStuAge(studentDTO.getStuAge());
+        emptyStudent.setStuName(studentDTO.getStuName());
+
+        return emptyStudent;
     }
 //Updated ! 
-    public Student updateStudentService(int studentId,Student studentData){
+    public StudentDTO updateStudentService(int studentId,StudentDTO updatedStudentDTO){
          //Find Old Student Data 
             Optional<Student> box=studentRepo.findById(studentId);
             //Student exist with this studentId
@@ -37,12 +43,12 @@ public class StudentService {
                 Student savedStudent=box.get();
 
                 //Update Field by Field 
-                savedStudent.setStuAge(studentData.getStuAge());
-                savedStudent.setStuName(studentData.getStuName());
+                savedStudent.setStuAge(updatedStudentDTO.getStuAge());
+                savedStudent.setStuName(updatedStudentDTO.getStuName());
 
                 //Save the Updated student object 
-                return studentRepo.save(savedStudent);
-                
+                Student savedUpdatedStudent=studentRepo.save(savedStudent); 
+                return getDto_from_Student(savedUpdatedStudent);
             }
             return null;             
     }
@@ -58,7 +64,15 @@ public class StudentService {
          }
          return false;
     }
-    public List<Student> getStudentService(){
-        return studentRepo.findAll();
+    public List<StudentDTO> getStudentService(){
+        return  studentRepo.findAll().stream().map(s->getDto_from_Student(s)).toList();
+    }
+    public StudentDTO getDto_from_Student(Student student){
+        StudentDTO temp=new StudentDTO();
+
+        temp.setStuAge(student.getStuAge());
+        temp.setStuName(student.getStuName());
+
+        return temp;
     }
 }
